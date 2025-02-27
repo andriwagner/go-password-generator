@@ -4,42 +4,48 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+	"flag"
 )
 
 
 func main() {
-	pwLength := 16	
-	minUpper, minNumber, minSpecial := 1, 1, 1
+	pwLength := flag.Int("l", 8, "Password length.")
+	minUpper := flag.Int("u", 1, "Min. upper case letter.")
+	minNumber := flag.Int("n", 1, "Min. number count.")
+	minSpecial := flag.Int("s", 1, "Min. special char count.")
 
-	// TODO: implement input args for: pwLength, minUpper, minNumber, minSpecial
+	flag.Parse()
 
-	l := int(pwLength / 4)
-	maxUpper, maxNumber, maxSpecial := l, l, l
-	pw := make([]byte, pwLength)
+	l := int(*pwLength / 4)
+	maxUpper := l
+	maxNumber := l
+	maxSpecial := l
+	
+	pw := make([]byte, *pwLength)
 
 	rand.Seed(time.Now().UnixNano())
 
 
 	// Lowercase letters
-	for i := 0; i < pwLength; i++ {
+	for i := 0; i < *pwLength; i++ {
 		pw[i] = byte(rand.Intn(25) + 97) // latin alphabet lowercase unicode 97-122
 	}
 
 
 	// Uppercase letters
-	for i, n := 0, (rand.Intn(maxUpper) + minUpper); i < n; i++ {
+	for i, n := 0, (rand.Intn(maxUpper) + *minUpper); i < n; i++ {
 		pw[i] -= 32 // shifts to upper case on ASCII table	
 	}
 
 
 	// Numbers
-	for i, n := 0, (rand.Intn(maxNumber) + minNumber); i < n; i++ {
+	for i, n := 0, (rand.Intn(maxNumber) + *minNumber); i < n; i++ {
 		pw[maxUpper + i] = byte(rand.Intn(9) + 48) // ASCII Digits 48-57
 	}
 
 
 	// Special char's
-	for i, n := 0, (rand.Intn(maxSpecial) + minSpecial); i < n; i++ {		
+	for i, n := 0, (rand.Intn(maxSpecial) + *minSpecial); i < n; i++ {
 		char := rand.Intn(21) + 33 // ASCII Symbols 33-47 & 58-64
 		
 		if char > 47 { // Skip numbers 48-57
@@ -61,7 +67,7 @@ func main() {
 	
 
 	// Output result
-	output := ""
+	pwStr := ""
 
 	// Apply colors
 	for i := 0; i < len(pw); i++ {
@@ -77,9 +83,9 @@ func main() {
 			color = "\033[0m" // reset color (letter)
 		}
 
-		output += color + string(pw[i]) +"\033[0m"
+		pwStr += color + string(pw[i]) +"\033[0m"
 	}
 
-	fmt.Println(output)
+	fmt.Println("Password: " + pwStr)
 }
 
